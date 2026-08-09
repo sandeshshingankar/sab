@@ -1,0 +1,19 @@
+====== -->
+<section class="letter-section reveal" id="letter">
+  <div class="section-inner" style="text-align:center;">
+    <div class="eyebrow">प्रिय सानिका</div>
+    <h2 class="section-title">एक पत्र, तुझ्यासाठी</h2>
+  </div>
+  <div class="letter-card">
+    <div class="letter-greet">प्रिय सानिका,</div>
+    <div class="letter-body">
+      <p>आज मैत्री दिन आहे, आणि मला वाटलं — नुसतं "Happy Friendship Day!" म्हणण्यापेक्षा तुला आपली अख्खी गोष्ट पुन्हा एकदा दाखवावी.</p>
+      <p>कारण काही माणसं आयुष्यात अशी येतात, ज्यांच्यासाठी शब्द नेहमी कमीच पडतात. तू त्यातलीच एक आहेस.</p>
+      <p>हे थोडं वाच, थोडं बघ आणि थोडं हस — हे सगळं फक्त आणि फक्त तुझ्यासाठी बनवलंय.</p>
+    </div>
+    <div class="letter-sign">— सांदेश</div>
+  </div>
+</section>
+
+<!-- ============ TIMELINE - THE BEGINNING ============ -->
+<section class="timeline-section reveal" id="b

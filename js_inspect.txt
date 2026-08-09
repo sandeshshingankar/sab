@@ -1,0 +1,621 @@
+1: 
+2: // ---------- entry envelope ----------
+3: const entryScreen=document.getElementById('entryScreen');
+4: const envelope=document.getElementById('envelope');
+5: const enterBtn=document.getElementById('enterBtn');
+6: const musicToggle=document.getElementById('musicToggle');
+7: 
+8: function openEntry(){
+9:   envelope.classList.add('open');
+10:   startAmbientAudio();
+11:   setTimeout(()=>{
+12:     entryScreen.classList.add('hidden');
+13:     document.body.style.overflow='auto';
+14:     musicToggle.classList.add('show');
+15:   },700);
+16: }
+17: enterBtn.addEventListener('click',openEntry);
+18: envelope.addEventListener('click',openEntry);
+19: document.body.style.overflow='hidden';
+20: 
+21: // ---------- stars in entry + hero ----------
+22: function makeStars(container,count){
+23:   for(let i=0;i<count;i++){
+24:     const s=document.createElement('div');
+25:     s.className='star';
+26:     const size=Math.random()*2.4+1;
+27:     s.style.width=size+'px';
+28:     s.style.height=size+'px';
+29:     s.style.left=Math.random()*100+'%';
+30:     s.style.top=Math.random()*100+'%';
+31:     s.style.animationDelay=(Math.random()*3)+'s';
+32:     container.appendChild(s);
+33:   }
+34: }
+35: makeStars(document.getElementById('entryStars'),70);
+36: makeStars(document.getElementById('heroStars'),50);
+37: 
+38: // ---------- floating petals in hero ----------
+39: const heroStarsEl=document.getElementById('heroStars');
+40: const petals=['🌸','✿','❀'];
+41: for(let i=0;i<14;i++){
+42:   const p=document.createElement('div');
+43:   p.className='petal';
+44:   p.textContent=petals[Math.floor(Math.random()*petals.length)];
+45:   p.style.left=Math.random()*100+'%';
+46:   p.style.fontSize=(Math.random()*10+12)+'px';
+47:   p.style.animationDuration=(Math.random()*8+10)+'s';
+48:   p.style.animationDelay=(Math.random()*10)+'s';
+49:   heroStarsEl.appendChild(p);
+50: }
+51: // diyas along hero bottom
+52: for(let i=0;i<5;i++){
+53:   const d=document.createElement('div');
+54:   d.className='diya';
+55:   d.style.left=(10+i*20)+'%';
+56:   d.style.bottom='6%';
+57:   d.innerHTML='<div class="flame"></div>';
+58:   heroStarsEl.appendChild(d);
+59: }
+60: 
+61: // ---------- scroll progress bar ----------
+62: const progressBar=document.getElementById('progressBar');
+63: window.addEventListener('scroll',()=>{
+64:   const h=document.documentElement;
+65:   const scrolled=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+66:   progressBar.style.width=scrolled+'%';
+67: });
+68: 
+69: // ---------- reveal on scroll ----------
+70: const revealTargets=document.querySelectorAll('.reveal, .reveal-item, .letter-card, .care-card, .tl-item, .polaroid, .poem, .song-card, .candle');
+71: const io=new IntersectionObserver((entries)=>{
+72:   entries.forEach(entry=>{
+73:     if(entry.isIntersecting){
+74:       entry.target.classList.add('in-view');
+75:     }
+76:   });
+77: },{threshold:0.18});
+78: revealTargets.forEach(el=>io.observe(el));
+79: 
+80: // ---------- timeline thread draw ----------
+81: const threadSvg=document.getElementById('threadSvg');
+82: const timelineEl=document.querySelector('.timeline');
+83: function sizeThread(){
+84:   const h=timelineEl.offsetHeight;
+85:   threadSvg.setAttribute('viewBox',`0 0 4 ${h}`);
+86:   const path=threadSvg.querySelector('path');
+87:   path.setAttribute('d',`M2,0 L2,${h}`);
+88: }
+89: window.addEventListener('load',sizeThread);
+90: window.addEventListener('resize',sizeThread);
+91: setTimeout(sizeThread,300);
+92: 
+93: // ---------- birthday candles ----------
+94: const candlesWrap=document.getElementById('candles');
+95: for(let i=0;i<5;i++){
+96:   const c=document.createElement('div');
+97:   c.className='candle reveal-item';
+98:   c.innerHTML='<div class="flame"></div><div class="stick"></div>';
+99:   candlesWrap.appendChild(c);
+100: }
+101: io.disconnect();
+102: document.querySelectorAll('.reveal, .reveal-item, .letter-card, .care-card, .tl-item, .polaroid, .poem, .song-card, .candle').forEach(el=>io.observe(el));
+103: 
+104: // ---------- finale floating hearts ----------
+105: const finaleHearts=document.getElementById('finaleHearts');
+106: function spawnHeart(){
+107:   const h=document.createElement('div');
+108:   h.className='finale-heart';
+109:   h.textContent=Math.random()>0.5?'♥':'❤';
+110:   h.style.left=Math.random()*100+'%';
+111:   h.style.animationDuration=(Math.random()*4+5)+'s';
+112:   h.style.fontSize=(Math.random()*14+12)+'px';
+113:   finaleHearts.appendChild(h);
+114:   setTimeout(()=>h.remove(),9000);
+115: }
+116: let heartInterval=null;
+117: const finaleSection=document.getElementById('finale');
+118: const finaleObserver=new IntersectionObserver((entries)=>{
+119:   entries.forEach(entry=>{
+120:     if(entry.isIntersecting){
+121:       if(!heartInterval){ heartInterval=setInterval(spawnHeart,500); }
+122:     } else {
+123:       if(heartInterval){ clearInterval(heartInterval); heartInterval=null; }
+124:     }
+125:   });
+126: },{threshold:0.1});
+127: finaleObserver.observe(finaleSection);
+128: 
+129: document.getElementById('replayBtn').addEventListener('click',()=>{
+130:   window.scrollTo({top:0,behavior:'smooth'});
+131: });
+132: 
+133: // ---------- vow section sparkles ----------
+134: makeStars(document.getElementById('vowSparkles'),40);
+135: 
+136: // ---------- YouTube facade players (click to load & autoplay) ----------
+137: document.querySelectorAll('.yt-player').forEach(player=>{
+138:   player.addEventListener('click',function handler(){
+139:     const id=player.getAttribute('data-yt-id');
+140:     const title=player.getAttribute('data-yt-title')||'video';
+141:     const iframe=document.createElement('iframe');
+142:     iframe.src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
+143:     iframe.title=title;
+144:     iframe.allow='accelerate-motion; autoplay; encrypted-media; picture-in-picture';
+145:     iframe.allowFullscreen=true;
+146:     player.innerHTML='';
+147:     player.appendChild(iframe);
+148:     player.removeEventListener('click',handler);
+149:     player.style.cursor='default';
+150:   });
+151: });
+152: 
+153: // ---------- gentle sparkle cursor trail (desktop, pointer:fine only) ----------
+154: if(window.matchMedia && window.matchMedia('(pointer:fine)').matches){
+155:   let lastSparkle=0;
+156:   const sparkleChars=['✦','✧','❁','♡'];
+157:   document.addEventListener('mousemove',(e)=>{
+158:     const now=Date.now();
+159:     if(now-lastSparkle<130) return;
+160:     lastSparkle=now;
+161:     const s=document.createElement('span');
+162:     s.className='sparkle-trail';
+163:     s.textContent=sparkleChars[Math.floor(Math.random()*sparkleChars.length)];
+164:     s.style.left=e.clientX+'px';
+165:     s.style.top=e.clientY+'px';
+166:     document.body.appendChild(s);
+167:     setTimeout(()=>s.remove(),1100);
+168:   });
+169: }
+170: 
+171: // ---------- पार्श्वसंगीत बटण: Hover to Listen (Aaj Din Chadheya) & Click to Watch (download.mp4) ----------
+172: const musicToggle = document.getElementById('musicToggle');
+173: const musicWrapper = document.getElementById('musicWrapper');
+174: const videoModal = document.getElementById('videoModal');
+175: const videoModalClose = document.getElementById('videoModalClose');
+176: const poemVideo = document.getElementById('poemVideo');
+177: let bgAudioIframe = null;
+178: let isBgMusicPlaying = false;
+179: 
+180: // Reveal music wrapper on load
+181: setTimeout(() => {
+182:   if (musicWrapper) musicWrapper.classList.add('show');
+183: }, 1200);
+184: 
+185: // Helper for sparkle burst effect on interaction
+186: function triggerSparkleBurst(x, y) {
+187:   const chars = ['💖', '✨', '🎵', '🎶', '🌸', '✨'];
+188:   for (let i = 0; i < 8; i++) {
+189:     const p = document.createElement('span');
+190:     p.className = 'burst-particle';
+191:     p.textContent = chars[Math.floor(Math.random() * chars.length)];
+192:     p.style.left = x + 'px';
+193:     p.style.top = y + 'px';
+194:     const angle = (i / 8) * Math.PI * 2;
+195:     const dist = Math.random() * 50 + 30;
+196:     p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+197:     p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+198:     document.body.appendChild(p);
+199:     setTimeout(() => p.remove(), 800);
+200:   }
+201: }
+202: 
+203: // Function to play Aaj Din Chadheya background audio on hover
+204: function startAajDinChadheyaAudio() {
+205:   if (isBgMusicPlaying) return;
+206:   
+207:   if (!bgAudioIframe) {
+208:     bgAudioIframe = document.createElement('iframe');
+209:     bgAudioIframe.id = 'bgSongIframe';
+210:     bgAudioIframe.style.display = 'none';
+211:     bgAudioIframe.allow = 'autoplay';
+212:     // Aaj Din Chadheya YouTube ID: IImcBEHuDRI
+213:     bgAudioIframe.src = 'https://www.youtube-nocookie.com/embed/IImcBEHuDRI?autoplay=1&enablejsapi=1&rel=0';
+214:     document.body.appendChild(bgAudioIframe);
+215:   }
+216:   
+217:   isBgMusicPlaying = true;
+218:   musicToggle.classList.add('playing');
+219: }
+220: 
+221: // Stop background music if playing
+222: function stopAajDinChadheyaAudio() {
+223:   if (bgAudioIframe) {
+224:     bgAudioIframe.remove();
+225:     bgAudioIframe = null;
+226:   }
+227:   isBgMusicPlaying = false;
+228:   musicToggle.classList.remove('playing');
+229: }
+230: 
+231: // Hover interaction: Play Aaj Din Chadheya
+232: musicToggle.addEventListener('mouseenter', (e) => {
+233:   const rect = musicToggle.getBoundingClientRect();
+234:   triggerSparkleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+235:   startAajDinChadheyaAudio();
+236: });
+237: 
+238: // Touchstart for mobile hover support
+239: musicToggle.addEventListener('touchstart', () => {
+240:   startAajDinChadheyaAudio();
+241: }, { passive: true });
+242: 
+243: // Click interaction: Open download.mp4 video modal
+244: musicToggle.addEventListener('click', (e) => {
+245:   // Pause background audio when opening video
+246:   stopAajDinChadheyaAudio();
+247:   
+248:   // Show video modal
+249:   videoModal.classList.add('show');
+250:   
+251:   // Try playing provided video file (download.mp4)
+252:   if (poemVideo) {
+253:     poemVideo.currentTime = 0;
+254:     poemVideo.play().catch(err => console.log('Autoplay handled:', err));
+255:   }
+256: });
+257: 
+258: // Close video modal
+259: if (videoModalClose) {
+260:   videoModalClose.addEventListener('click', () => {
+261:     videoModal.classList.remove('show');
+262:     if (poemVideo) poemVideo.pause();
+263:   });
+264: }
+265: 
+266: videoModal.addEventListener('click', (e) => {
+267:   if (e.target === videoModal) {
+268:     videoModal.classList.remove('show');
+269:     if (poemVideo) poemVideo.pause();
+270:   }
+271: });
+272: // ---------- fallback: local memory video, if the song can't load ----------
+273: function getFallbackModal(){
+274:   let modal = document.getElementById('videoFallbackModal');
+275:   if(!modal){
+276:     modal = document.createElement('div');
+277:     modal.id = 'videoFallbackModal';
+278:     modal.className = 'video-modal';
+279:     modal.innerHTML = '<div class="video-modal-inner">' +
+280:       '<button class="video-modal-close" aria-label="बंद करा">✕</button>' +
+281:       '<video src="'+FALLBACK_VIDEO_SRC+'" controls autoplay playsinline></video>' +
+282:       '<p class="video-modal-cap">आज दिन चढेया — तुझ्यासाठी 🤍</p>' +
+283:     '</div>';
+284:     document.body.appendChild(modal);
+285:     const closeIt = ()=>{
+286:       modal.classList.remove('show');
+287:       const v = modal.querySelector('video');
+288:       v.pause();
+289:       setMusicUI(false);
+290:     };
+291:     modal.querySelector('.video-modal-close').addEventListener('click', closeIt);
+292:     modal.addEventListener('click', (e)=>{ if(e.target === modal) closeIt(); });
+293:     modal.querySelector('video').addEventListener('ended', ()=> setMusicUI(false));
+294:   }
+295:   return modal;
+296: }
+297: 
+298: function playFallbackVideo(){
+299:   const modal = getFallbackModal();
+300:   modal.classList.add('show');
+301:   const v = modal.querySelector('video');
+302:   v.currentTime = 0;
+303:   v.muted = false;
+304:   v.play().catch(()=>{});
+305:   setMusicUI(true);
+306: }
+307: 
+308: function toggleMusic(){
+309:   if(ytBgFailed){
+310:     const modal = document.getElementById('videoFallbackModal');
+311:     if(modal && modal.classList.contains('show')){
+312:       modal.classList.remove('show');
+313:       modal.querySelector('video').pause();
+314:       setMusicUI(false);
+315:     }else{
+316:       playFallbackVideo();
+317:     }
+318:     return;
+319:   }
+320:   if(!ytBgPlayer){
+321:     setMusicUI(true); // तात्पुरता स्टेटस — गाणं लोड होईपर्यंत
+322:     loadYouTubeApiAndInit();
+323:     return;
+324:   }
+325:   if(musicPlaying){
+326:     ytBgPlayer.pauseVideo();
+327:   }else{
+328:     ytBgPlayer.playVideo();
+329:   }
+330: }
+331: 
+332: // ================= OUR SWEET MEMORIES LOGIC =================
+333: // Default password configuration - edit here if you want to change it later
+334: const MEMORY_PASSWORD = "sanikasandesh2225";
+335: const MEMORY_STORAGE_KEY = "sanika_sandesh_sweet_memories_v1";
+336: 
+337: let pendingAction = null; // 'add' or { action: 'delete', id: 123 }
+338: let selectedMediaBase64 = "";
+339: 
+340: // Initial default memories if none exist
+341: const DEFAULT_MEMORIES = [
+342:   {
+343:     id: 1,
+344:     type: "text",
+345:     title: "आपली पहिली संवाद भेट ✨",
+346:     date: "२ ऑगस्ट २०२६",
+347:     text: "एक साध्या मेसेजपासून सुरू झालेली आपली ही सुंदर गोष्ट आज आयुष्यातली सगळ्यात मौल्यवान मैत्री झाली आहे. 💖"
+348:   },
+349:   {
+350:     id: 2,
+351:     type: "photo",
+352:     title: "हॅकाथॉनच्या आठवणी 📸",
+353:     date: "विशेष क्षण",
+354:     text: "सोबत कोडिंग करताना आणि नवीन गोष्टी शिकताना घालवलेला प्रत्येक क्षण खास होता.",
+355:     mediaUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='260' viewBox='0 0 400 260'%3E%3Crect width='100%25' height='100%25' fill='%23521a29'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23eecf8a' font-family='sans-serif' font-size='20'%3E📸 सानिका आणि सांदेश 💖%3C/text%3E%3C/svg%3E"
+356:   }
+357: ];
+358: 
+359: // Read stored memories (localStorage + remote cloud sync)
+360: function getLocalMemories() {
+361:   try {
+362:     const data = localStorage.getItem(MEMORY_STORAGE_KEY);
+363:     if (data) {
+364:       const parsed = JSON.parse(data);
+365:       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+366:     }
+367:   } catch (e) {
+368:     console.error("localStorage read error", e);
+369:   }
+370:   return DEFAULT_MEMORIES;
+371: }
+372: 
+373: function saveLocalMemories(memories) {
+374:   try {
+375:     localStorage.setItem(MEMORY_STORAGE_KEY, JSON.stringify(memories));
+376:   } catch (e) {
+377:     console.error("localStorage write error", e);
+378:   }
+379:   syncToCloud(memories);
+380: }
+381: 
+382: // Cloud Synchronization for GitHub Pages cross-device persistence
+383: async function fetchCloudMemories() {
+384:   try {
+385:     const res = await fetch('https://api.myjson.online/v1/records/4df30b35-77ef-4017-8e68-07283ea0eef7', { method: 'GET' });
+386:     if (res.ok) {
+387:       const json = await res.json();
+388:       if (json && Array.isArray(json.data) && json.data.length > 0) {
+389:         localStorage.setItem(MEMORY_STORAGE_KEY, JSON.stringify(json.data));
+390:         renderMemories();
+391:       }
+392:     }
+393:   } catch (e) {
+394:     // Fail silently, local storage handles offline / instant load
+395:   }
+396: }
+397: 
+398: async function syncToCloud(memories) {
+399:   try {
+400:     await fetch('https://api.myjson.online/v1/records/4df30b35-77ef-4017-8e68-07283ea0eef7', {
+401:       method: 'PUT',
+402:       headers: { 'Content-Type': 'application/json' },
+403:       body: JSON.stringify({ data: memories })
+404:     });
+405:   } catch (e) {
+406:     // Fallback locally
+407:   }
+408: }
+409: 
+410: // Render Memories Grid
+411: function renderMemories() {
+412:   const grid = document.getElementById('memoriesGrid');
+413:   if (!grid) return;
+414:   const memories = getLocalMemories();
+415: 
+416:   grid.innerHTML = '';
+417:   memories.forEach(m => {
+418:     const card = document.createElement('div');
+419:     card.className = 'memory-card reveal-item in-view';
+420:     
+421:     let typeLabel = 'संदेश ✍️';
+422:     if (m.type === 'photo') typeLabel = 'फोटो 📷';
+423:     if (m.type === 'video') typeLabel = 'व्हिडिओ 🎥';
+424: 
+425:     let mediaHtml = '';
+426:     if (m.type === 'photo' && m.mediaUrl) {
+427:       mediaHtml = `<div class="memory-media-wrap"><img src="${m.mediaUrl}" alt="${m.title}" loading="lazy"></div>`;
+428:     } else if (m.type === 'video' && m.mediaUrl) {
+429:       if (m.mediaUrl.includes('youtube.com') || m.mediaUrl.includes('youtu.be')) {
+430:         let embedUrl = m.mediaUrl;
+431:         if (embedUrl.includes('watch?v=')) embedUrl = embedUrl.replace('watch?v=', 'embed/');
+432:         mediaHtml = `<div class="memory-media-wrap" style="aspect-ratio:16/9;"><iframe src="${embedUrl}" width="100%" height="100%" border="0" allowfullscreen></iframe></div>`;
+433:       } else {
+434:         mediaHtml = `<div class="memory-media-wrap"><video src="${m.mediaUrl}" controls playsinline></video></div>`;
+435:       }
+436:     }
+437: 
+438:     card.innerHTML = `
+439:       <div class="memory-card-header">
+440:         <span class="memory-type-badge">${typeLabel}</span>
+441:         <span class="memory-date">${m.date || ''}</span>
+442:       </div>
+443:       <h4 class="memory-title">${m.title}</h4>
+444:       ${m.text ? `<p class="memory-text">${m.text}</p>` : ''}
+445:       ${mediaHtml}
+446:       <div class="memory-card-footer">
+447:         <button class="delete-memory-btn" onclick="requestDeleteMemory(${m.id})">
+448:           <span>🗑️</span> हटवा
+449:         </button>
+450:       </div>
+451:     `;
+452:     grid.appendChild(card);
+453:   });
+454: }
+455: 
+456: // Password Verification Flow
+457: const openAddMemoryBtn = document.getElementById('openAddMemoryBtn');
+458: const passwordModalOverlay = document.getElementById('passwordModalOverlay');
+459: const passwordInput = document.getElementById('passwordInput');
+460: const passwordError = document.getElementById('passwordError');
+461: const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+462: const confirmPasswordBtn = document.getElementById('confirmPasswordBtn');
+463: const addMemoryModalOverlay = document.getElementById('addMemoryModalOverlay');
+464: const cancelAddMemoryBtn = document.getElementById('cancelAddMemoryBtn');
+465: const addMemoryForm = document.getElementById('addMemoryForm');
+466: const memoryTypeSelect = document.getElementById('memoryType');
+467: const mediaUploadGroup = document.getElementById('mediaUploadGroup');
+468: const mediaFileInput = document.getElementById('mediaFile');
+469: const mediaUrlInput = document.getElementById('mediaUrl');
+470: const mediaPreviewBox = document.getElementById('mediaPreviewBox');
+471: 
+472: if (openAddMemoryBtn) {
+473:   openAddMemoryBtn.addEventListener('click', () => {
+474:     pendingAction = { action: 'add' };
+475:     passwordInput.value = '';
+476:     passwordError.style.display = 'none';
+477:     passwordModalOverlay.classList.add('show');
+478:     setTimeout(() => passwordInput.focus(), 100);
+479:   });
+480: }
+481: 
+482: function requestDeleteMemory(id) {
+483:   pendingAction = { action: 'delete', id: id };
+484:   passwordInput.value = '';
+485:   passwordError.style.display = 'none';
+486:   passwordModalOverlay.classList.add('show');
+487:   setTimeout(() => passwordInput.focus(), 100);
+488: }
+489: 
+490: if (cancelPasswordBtn) {
+491:   cancelPasswordBtn.addEventListener('click', () => {
+492:     passwordModalOverlay.classList.remove('show');
+493:     pendingAction = null;
+494:   });
+495: }
+496: 
+497: if (confirmPasswordBtn) {
+498:   confirmPasswordBtn.addEventListener('click', verifyPasswordAndProceed);
+499: }
+500: 
+501: if (passwordInput) {
+502:   passwordInput.addEventListener('keypress', (e) => {
+503:     if (e.key === 'Enter') verifyPasswordAndProceed();
+504:   });
+505: }
+506: 
+507: function verifyPasswordAndProceed() {
+508:   if (passwordInput.value === MEMORY_PASSWORD) {
+509:     passwordModalOverlay.classList.remove('show');
+510:     if (pendingAction && pendingAction.action === 'add') {
+511:       openAddMemoryModal();
+512:     } else if (pendingAction && pendingAction.action === 'delete') {
+513:       executeDeleteMemory(pendingAction.id);
+514:     }
+515:     pendingAction = null;
+516:   } else {
+517:     passwordError.style.display = 'block';
+518:   }
+519: }
+520: 
+521: function openAddMemoryModal() {
+522:   addMemoryForm.reset();
+523:   selectedMediaBase64 = "";
+524:   mediaPreviewBox.style.display = 'none';
+525:   mediaPreviewBox.innerHTML = '';
+526:   updateMediaUploadVisibility();
+527:   addMemoryModalOverlay.classList.add('show');
+528: }
+529: 
+530: if (cancelAddMemoryBtn) {
+531:   cancelAddMemoryBtn.addEventListener('click', () => {
+532:     addMemoryModalOverlay.classList.remove('show');
+533:   });
+534: }
+535: 
+536: if (memoryTypeSelect) {
+537:   memoryTypeSelect.addEventListener('change', updateMediaUploadVisibility);
+538: }
+539: 
+540: function updateMediaUploadVisibility() {
+541:   const type = memoryTypeSelect.value;
+542:   if (type === 'photo' || type === 'video') {
+543:     mediaUploadGroup.style.display = 'block';
+544:     document.getElementById('mediaLabel').textContent = type === 'photo' ? 'फोटो अपलोड करा / लिंक टाका:' : 'व्हिडिओ अपलोड करा / लिंक टाका:';
+545:   } else {
+546:     mediaUploadGroup.style.display = 'none';
+547:   }
+548: }
+549: 
+550: // Media file upload handler
+551: if (mediaFileInput) {
+552:   mediaFileInput.addEventListener('change', function () {
+553:     const file = this.files[0];
+554:     if (!file) return;
+555: 
+556:     const reader = new FileReader();
+557:     reader.onload = function (e) {
+558:       selectedMediaBase64 = e.target.result;
+559:       mediaPreviewBox.style.display = 'flex';
+560:       if (file.type.startsWith('image/')) {
+561:         mediaPreviewBox.innerHTML = `<img src="${selectedMediaBase64}" alt="Preview">`;
+562:       } else if (file.type.startsWith('video/')) {
+563:         mediaPreviewBox.innerHTML = `<video src="${selectedMediaBase64}" controls></video>`;
+564:       }
+565:     };
+566:     reader.readAsDataURL(file);
+567:   });
+568: }
+569: 
+570: if (mediaUrlInput) {
+571:   mediaUrlInput.addEventListener('input', function () {
+572:     if (this.value.trim()) {
+573:       selectedMediaBase64 = this.value.trim();
+574:       mediaPreviewBox.style.display = 'flex';
+575:       const val = this.value.trim();
+576:       if (val.includes('youtube.com') || val.includes('youtu.be')) {
+577:         mediaPreviewBox.innerHTML = `<p style="color:var(--gold-light);padding:10px;">YouTube Link added ✔️</p>`;
+578:       } else {
+579:         mediaPreviewBox.innerHTML = `<img src="${val}" onerror="this.style.display='none'">`;
+580:       }
+581:     }
+582:   });
+583: }
+584: 
+585: if (addMemoryForm) {
+586:   addMemoryForm.addEventListener('submit', function (e) {
+587:     e.preventDefault();
+588:     const type = memoryTypeSelect.value;
+589:     const title = document.getElementById('memoryTitle').value.trim();
+590:     const date = document.getElementById('memoryDate').value.trim() || new Date().toLocaleDateString('mr-IN');
+591:     const text = document.getElementById('memoryText').value.trim();
+592: 
+593:     const newMemory = {
+594:       id: Date.now(),
+595:       type: type,
+596:       title: title,
+597:       date: date,
+598:       text: text,
+599:       mediaUrl: selectedMediaBase64
+600:     };
+601: 
+602:     const memories = getLocalMemories();
+603:     memories.unshift(newMemory);
+604:     saveLocalMemories(memories);
+605:     renderMemories();
+606: 
+607:     addMemoryModalOverlay.classList.remove('show');
+608:   });
+609: }
+610: 
+611: function executeDeleteMemory(id) {
+612:   let memories = getLocalMemories();
+613:   memories = memories.filter(m => m.id !== id);
+614:   saveLocalMemories(memories);
+615:   renderMemories();
+616: }
+617: 
+618: renderMemories();
+619: fetchCloudMemories();
+620: 
+621: musicToggle.addEventListener('click', toggleMusic);
